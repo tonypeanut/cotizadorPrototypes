@@ -68,7 +68,7 @@ UI.prototype.llenarOpciones = () => {
 
 UI.prototype.mostrarMensaje = (mensaje, tipo) =>{
     const div = document.createElement('div');
-
+    
     if(tipo==='error'){
         div.classList.add('error');
     } else {
@@ -88,17 +88,46 @@ UI.prototype.mostrarMensaje = (mensaje, tipo) =>{
 }
 
 UI.prototype.mostrarResultado = (total, seguro) => {
+    const {marca, year, tipo} = seguro;
+    let textoMarca
+
+    switch(marca) {
+        case '1':
+            textoMarca = 'Americano';
+            break;
+        case '2':
+            textoMarca = 'Asiatico';
+            break;
+        case '3':
+            textoMarca = 'Europeo'
+            break;
+        default: 
+            break;
+    }
+
     // Crear el resultado
     const div = document.createElement('div');
     div.classList.add('mt-10');
 
     div.innerHTML = `
         <p class = "header">Tu Resumen</p>
-        <p class = "font-bold">Total: ${total}</p>
+        <p class = "font-bold">Marca: <span class="font-normal">${textoMarca}</span></p>
+        <p class = "font-bold">Año: <span class="font-normal">${year}</span></p>
+        <p class = "font-bold">tipo: <span class="font-normal capitalize">${tipo}</span></p>
+        <p class = "font-bold">Total: <span class="font-normal">$ ${total}</span></p>
     `;
 
     const resultadoDiv = document.querySelector('#resultado');
-    resultadoDiv.appendChild(div);
+    
+    // Mostrar el spinner
+    const spinner = document.querySelector('#cargando');
+    spinner.style.display = 'block';
+
+    setTimeout(() => {
+        spinner.style.display = 'none'; // Se borra el spinner
+        resultadoDiv.appendChild(div); // Se muestra el resultado
+    }, 3000)
+
 }
 
 // instanciar UI
@@ -133,6 +162,12 @@ function cotizarSeguro(e) {
     } 
 
     ui.mostrarMensaje('Cotizando...', 'exito');
+
+    // Ocultar las cotizaciones previas
+    const resultados = document.querySelector('#resultado div');
+    if (resultados != null) {
+        resultados.remove();
+    }
 
     // Instanciar el seguro
     const seguro = new Seguro(marca, year, tipo);
